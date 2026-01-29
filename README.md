@@ -2,7 +2,7 @@
 
 Table Snap Pro es una aplicación web que permite extraer tablas desde imágenes y convertirlas automáticamente en archivos Excel utilizando modelos de visión con inteligencia artificial. Está pensada para facilitar la digitalización de datos capturados en fotos, escaneos o capturas de pantalla.
 
-URL:
+URL: https://table-snap-pro.vercel.app/
 
 
 ---
