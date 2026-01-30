@@ -1,5 +1,6 @@
 import { scrollToSection } from "@/lib/navigation-utils";
 import { FileSpreadsheet, Github, Linkedin, Mail } from "lucide-react";
+import Link from "next/link";
 
 export default function LandingFooter() {
     return (
@@ -22,7 +23,7 @@ export default function LandingFooter() {
                 <h4 className="font-semibold mb-4">Enlaces</h4>
                 <ul className="space-y-2 text-slate-400 text-sm">
                     <li>
-                    <a 
+                    <Link 
                         href="#app"
                         onClick={(e) => {
                         e.preventDefault();
@@ -31,10 +32,10 @@ export default function LandingFooter() {
                         className="hover:text-green-400 transition-colors cursor-pointer"
                     >
                         Aplicación
-                    </a>
+                    </Link>
                     </li>
                     <li>
-                    <a 
+                    <Link 
                         href="#caracteristicas"
                         onClick={(e) => {
                         e.preventDefault();
@@ -43,21 +44,21 @@ export default function LandingFooter() {
                         className="hover:text-green-400 transition-colors cursor-pointer"
                     >
                         Características
-                    </a>
+                    </Link>
                     </li>
                     <li>
-                    <a href="/about" className="hover:text-green-400 transition-colors"
+                    <Link href="/about" className="hover:text-green-400 transition-colors"
                     >
                         Acerca de
-                    </a>
+                    </Link>
                     </li>
                     <li>
-                      <a 
+                      <Link 
                         href="/terms"
                         className="hover:text-green-400 transition-colors"
                       >
                         Términos y condiciones
-                      </a>
+                      </Link>
                     </li>
                 </ul>
                 </div>
@@ -65,30 +66,30 @@ export default function LandingFooter() {
                 <div>
                 <h4 className="font-semibold mb-4">Contacto</h4>
                 <div className="flex space-x-4">
-                    <a
+                    <Link
                     href="https://github.com/dacortess"
                     target="_blank"
                     className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors"
                     aria-label="GitHub"
                     >
                     <Github className="w-5 h-5" />
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                     href="https://www.linkedin.com/in/davidccortes/"
                     target="_blank"
                     className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors"
                     aria-label="LinkedIn"
                     >
                     <Linkedin className="w-5 h-5" />
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                     href="mailto:dcortessalazar@gmail.com"
                     target="_blank"
                     className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-green-600 transition-colors"
                     aria-label="Email"
                     >
                     <Mail className="w-5 h-5" />
-                    </a>
+                    </Link>
                 </div>
                 </div>
             </div>

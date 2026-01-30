@@ -1,10 +1,18 @@
 'use client';
 
 import { downloadExcelFile, validateExcelData } from '@/lib/excel-utils';
-import { Download, Eye, FileSpreadsheet, Loader2, Upload, X } from 'lucide-react';
+import { Download, Eye, FileSpreadsheet, Loader2, Upload, X, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { useState } from 'react';
+
+interface ProcessingStep {
+  step: string;
+  status: 'processing' | 'success' | 'error';
+  message: string;
+  timestamp: number;
+}
 
 export default function LandingUpload() {
   
@@ -14,6 +22,9 @@ export default function LandingUpload() {
   const [error, setError] = useState<string | null>(null);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [processingSteps, setProcessingSteps] = useState<ProcessingStep[]>([]);
+  const [showProcessingDetails, setShowProcessingDetails] = useState(true);
+  const [usedModel, setUsedModel] = useState<string | null>(null);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -21,8 +32,8 @@ export default function LandingUpload() {
       setSelectedFile(file);
       setError(null);
       setExtractedData(null);
+      setProcessingSteps([]);
       
-      // Crear preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreviewUrl(e.target?.result as string);
@@ -38,6 +49,7 @@ export default function LandingUpload() {
       setSelectedFile(file);
       setError(null);
       setExtractedData(null);
+      setProcessingSteps([]);
       
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -51,7 +63,7 @@ export default function LandingUpload() {
     e.preventDefault();
   };
 
-    const processImage = async () => {
+  const processImage = async () => {
     if (!selectedFile) return;
 
     if (!privacyAccepted) {
@@ -61,36 +73,81 @@ export default function LandingUpload() {
 
     setIsProcessing(true);
     setError(null);
+    setProcessingSteps([]);
+    setShowProcessingDetails(true);
 
     try {
       const formData = new FormData();
       formData.append('image', selectedFile);
-
-      console.log('Enviando imagen al servidor...');
 
       const response = await fetch('/api/extract', {
         method: 'POST',
         body: formData,
       });
 
-      console.log('Respuesta del servidor:', response.status);
-
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || errorData.details || 'Error al procesar la imagen');
+        throw new Error('Error al conectar con el servidor');
       }
 
-      const result = await response.json();
-      console.log('Datos extraídos:', result);
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
 
-      if (!validateExcelData(result.data)) {
-        throw new Error('Los datos extraídos no tienen el formato correcto');
+      if (!reader) {
+        throw new Error('No se pudo leer la respuesta del servidor');
       }
 
-      setExtractedData(result.data);
+      while (true) {
+        const { done, value } = await reader.read();
+        
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const jsonData = JSON.parse(line.slice(6));
+              
+              if (jsonData.type === 'data') {
+                if (!validateExcelData(jsonData.data)) {
+                  throw new Error('Los datos extraídos no tienen el formato correcto');
+                }
+                setExtractedData(jsonData.data);
+                setUsedModel(jsonData.model || null);
+              } else {
+                setProcessingSteps(prev => {
+                  const existingIndex = prev.findIndex(p => p.step === jsonData.step);
+                  
+                  if (existingIndex !== -1) {
+                    const updated = [...prev];
+                    updated[existingIndex] = jsonData;
+                    return updated;
+                  } else {
+                    return [...prev, jsonData];
+                  }
+                });
+
+                if (jsonData.status === 'error' && jsonData.step === 'error') {
+                  setError(jsonData.message);
+                }
+              }
+            } catch (e) {
+              console.error('Error parsing SSE data:', e);
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error('Error:', err);
-      setError(err instanceof Error ? err.message : 'Error desconocido al procesar la imagen');
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido al procesar la imagen';
+      setError(errorMessage);
+      setProcessingSteps(prev => [...prev, {
+        step: 'error',
+        status: 'error',
+        message: errorMessage,
+        timestamp: Date.now()
+      }]);
     } finally {
       setIsProcessing(false);
     }
@@ -113,6 +170,9 @@ export default function LandingUpload() {
     setExtractedData(null);
     setError(null);
     setPrivacyAccepted(false);
+    setProcessingSteps([]);
+    setShowProcessingDetails(true);
+    setUsedModel(null);
   };
 
   return (
@@ -183,7 +243,7 @@ export default function LandingUpload() {
                     />
                     <span className="text-sm text-slate-700 leading-relaxed">
                       He leído y acepto los{' '}
-                      <a 
+                      <Link 
                         href="/terms" 
                         target="_blank"
                         rel="noopener noreferrer"
@@ -191,7 +251,7 @@ export default function LandingUpload() {
                         onClick={(e) => e.stopPropagation()}
                       >
                         términos y condiciones
-                      </a>
+                      </Link>
                       {' '}de uso. Entiendo que mis imágenes serán procesadas por servicios de IA de terceros.
                     </span>
                   </label>
@@ -225,17 +285,53 @@ export default function LandingUpload() {
                     <div className="h-full bg-green-600 animate-pulse" style={{ width: '100%' }}></div>
                   </div>
 
-                  <div className="space-y-3 animate-pulse">
-                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-slate-200 rounded w-full"></div>
-                    <div className="h-4 bg-slate-200 rounded w-5/6"></div>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <div className="space-y-2">
+                      {processingSteps.map((step, index) => (
+                        <div 
+                          key={`${step.step}-${step.timestamp}-${index}`}
+                          className="flex items-center space-x-2 text-sm"
+                        >
+                          <div className="flex-shrink-0">
+                            {step.status === 'processing' && (
+                              <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                            )}
+                            {step.status === 'success' && (
+                              <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            )}
+                            {step.status === 'error' && (
+                              <AlertCircle className="w-4 h-4 text-red-600" />
+                            )}
+                          </div>
+                          <p className={`flex-1 ${
+                            step.status === 'success'
+                              ? 'text-slate-700'
+                              : step.status === 'error'
+                              ? 'text-red-700'
+                              : 'text-slate-900 font-medium'
+                          }`}>
+                            {step.message}
+                          </p>
+                        </div>
+                      ))}
+                      
+                      {processingSteps.length === 0 && (
+                        <div className="flex items-center space-x-2 text-sm">
+                          <Loader2 className="w-4 h-4 text-slate-600 animate-spin" />
+                          <p className="text-slate-600">Iniciando procesamiento...</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
 
-              {error && (
+              {error && !isProcessing && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-700 font-semibold">Error:</p>
+                  <p className="text-red-700 font-semibold flex items-center">
+                    <AlertCircle className="w-5 h-5 mr-2" />
+                    Error:
+                  </p>
                   <p className="text-red-600 text-sm mt-1">{error}</p>
                 </div>
               )}
@@ -247,7 +343,66 @@ export default function LandingUpload() {
                       <FileSpreadsheet className="w-5 h-5 mr-2" />
                       ¡Datos extraídos exitosamente!
                     </p>
+                    {usedModel && (
+                      <p className="text-green-600 text-sm mt-2 flex items-center">
+                        <span className="text-slate-600">Modelo utilizado:</span>
+                        <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 rounded font-mono text-xs">
+                          {usedModel}
+                        </span>
+                      </p>
+                    )}
                   </div>
+
+                  {processingSteps.length > 0 && (
+                    <div className="border border-slate-200 rounded-lg overflow-hidden">
+                      <button
+                        onClick={() => setShowProcessingDetails(!showProcessingDetails)}
+                        className="w-full px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between text-sm font-medium text-slate-700"
+                      >
+                        <span className="flex items-center">
+                          <Clock className="w-4 h-4 mr-2" />
+                          Detalles del procesamiento
+                        </span>
+                        <span className={`transform transition-transform ${showProcessingDetails ? 'rotate-180' : ''}`}>
+                          ▼
+                        </span>
+                      </button>
+                      
+                      {showProcessingDetails && (
+                        <div className="p-4 bg-white max-h-60 overflow-y-auto">
+                          <div className="space-y-2">
+                            {processingSteps.map((step, index) => (
+                              <div 
+                                key={`${step.step}-${step.timestamp}-${index}`}
+                                className="flex items-center space-x-2 text-sm"
+                              >
+                                <div className="flex-shrink-0">
+                                  {step.status === 'processing' && (
+                                    <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                                  )}
+                                  {step.status === 'success' && (
+                                    <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                  )}
+                                  {step.status === 'error' && (
+                                    <AlertCircle className="w-4 h-4 text-red-600" />
+                                  )}
+                                </div>
+                                <p className={`flex-1 ${
+                                  step.status === 'success'
+                                    ? 'text-slate-700'
+                                    : step.status === 'error'
+                                    ? 'text-red-700'
+                                    : 'text-slate-900 font-medium'
+                                }`}>
+                                  {step.message}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="bg-slate-50 rounded-lg p-6 max-h-96 overflow-auto border border-green-200">
                     <h3 className="font-semibold text-slate-900 mb-4 flex items-center">

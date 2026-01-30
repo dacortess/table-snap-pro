@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, Shield, Database, Brain, Code, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Shield, Database, Brain, Code, AlertTriangle, RefreshCw } from 'lucide-react';
 import SectionHeader from '@/components/sections/headers/sectionHeader';
 import SectionFooter from '@/components/sections/footers/sectionFooter';
 
@@ -26,8 +26,8 @@ export default function TermsPage() {
                   Aviso importante sobre privacidad
                 </h3>
                 <p className="text-sm text-amber-800">
-                  Al utilizar este servicio, tus imágenes serán procesadas por modelos de inteligencia artificial de terceros. 
-                  Lee detenidamente estos términos antes de usar la aplicación.
+                  Al utilizar este servicio, tus imágenes serán procesadas por modelos de inteligencia artificial de terceros 
+                  seleccionados dinámicamente. Lee detenidamente estos términos antes de usar la aplicación.
                 </p>
               </div>
             </div>
@@ -45,18 +45,49 @@ export default function TermsPage() {
               </div>
               
               <div className="pl-13 space-y-4 text-slate-700">
-                <h3 className="font-semibold text-slate-900">1.1. Servicios de terceros</h3>
+                <h3 className="font-semibold text-slate-900">1.1. Sistema de selección dinámica de modelos</h3>
                 <p>
-                  Table Snap Pro utiliza <strong>OpenRouter API</strong> como intermediario para acceder a modelos 
-                  de inteligencia artificial de visión computacional. Actualmente, los modelos utilizados incluyen:
+                  Table Snap Pro utiliza un <strong>sistema inteligente de selección de modelos</strong> que:
                 </p>
                 <ul className="list-disc list-inside space-y-2 pl-4">
-                  <li><strong>Google Gemini 2.0 Flash</strong> - Proveedor: Google AI</li>
-                  <li><strong>Qwen 2 VL 7B</strong> - Proveedor: Alibaba Cloud</li>
-                  <li><strong>Meta Llama 3.2 11B Vision</strong> - Proveedor: Meta AI</li>
+                  <li>Consulta en tiempo real los modelos disponibles en <strong>OpenRouter API</strong></li>
+                  <li>Filtra automáticamente modelos con capacidad de <strong>visión multimodal</strong> (imagen + texto)</li>
+                  <li>Selecciona solo modelos de empresas reconocidas: <strong>OpenAI, Google, Anthropic, Meta y Qwen</strong></li>
+                  <li>Utiliza únicamente modelos <strong>gratuitos</strong> disponibles públicamente</li>
+                  <li>Ordena los modelos por <strong>tamaño de contexto</strong> (mayor capacidad primero)</li>
+                  <li>Prueba automáticamente con diferentes modelos hasta encontrar uno disponible</li>
                 </ul>
 
-                <h3 className="font-semibold text-slate-900 mt-6">1.2. Almacenamiento y uso de datos por parte de los proveedores</h3>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                  <div className="flex items-start space-x-2">
+                    <RefreshCw className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-blue-900 font-semibold mb-1">Modelos variables</p>
+                      <p className="text-blue-800 text-sm">
+                        Los modelos específicos utilizados pueden cambiar según la disponibilidad en tiempo real. 
+                        El sistema siempre elegirá el modelo gratuito con mayor capacidad de contexto disponible 
+                        en el momento de tu solicitud.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <h3 className="font-semibold text-slate-900 mt-6">1.2. Proveedores de modelos potenciales</h3>
+                <p>
+                  Dependiendo de la disponibilidad, tu imagen podría ser procesada por modelos de:
+                </p>
+                <ul className="list-disc list-inside space-y-2 pl-4">
+                  <li><strong>OpenAI</strong> - GPT-4 Vision, GPT-4o y variantes</li>
+                  <li><strong>Google</strong> - Gemini, Gemma con capacidades de visión</li>
+                  <li><strong>Anthropic</strong> - Claude 3/4 con visión</li>
+                  <li><strong>Meta</strong> - Llama Vision y variantes multimodales</li>
+                  <li><strong>Qwen</strong> - Qwen VL y modelos de visión</li>
+                </ul>
+                <p className="text-sm text-slate-600 italic mt-2">
+                  Nota: La lista exacta de modelos cambia constantemente según las actualizaciones de OpenRouter.
+                </p>
+
+                <h3 className="font-semibold text-slate-900 mt-6">1.3. Almacenamiento y uso de datos por parte de los proveedores</h3>
                 <p>
                   Al procesar tu imagen a través de estos servicios, <strong>los proveedores de IA pueden</strong>:
                 </p>
@@ -80,30 +111,50 @@ export default function TermsPage() {
                   </ul>
                 </div>
 
-                <h3 className="font-semibold text-slate-900 mt-6">1.3. Enlaces a políticas de privacidad</h3>
+                <h3 className="font-semibold text-slate-900 mt-6">1.4. Enlaces a políticas de privacidad</h3>
                 <p>
                   Te recomendamos revisar las políticas de privacidad de los proveedores:
                 </p>
                 <ul className="space-y-2 pl-4 mt-2">
                   <li>
-                    <a 
+                    <Link 
                       href="https://openrouter.ai/privacy" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-green-600 hover:text-green-700 underline"
                     >
                       Política de privacidad de OpenRouter
-                    </a>
+                    </Link>
                   </li>
                   <li>
-                    <a 
+                    <Link 
+                      href="https://openai.com/policies/privacy-policy" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-700 underline"
+                    >
+                      Política de privacidad de OpenAI
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
                       href="https://policies.google.com/privacy" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-green-600 hover:text-green-700 underline"
                     >
                       Política de privacidad de Google
-                    </a>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link 
+                      href="https://www.anthropic.com/legal/privacy" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-green-600 hover:text-green-700 underline"
+                    >
+                      Política de privacidad de Anthropic
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -120,7 +171,7 @@ export default function TermsPage() {
               </div>
               
               <div className="pl-13 space-y-4 text-slate-700">
-                <h3 className="font-semibold text-slate-900">2.1. Procesamiento local</h3>
+                <h3 className="font-semibold text-slate-900">2.1. Procesamiento sin almacenamiento</h3>
                 <p>
                   Table Snap Pro está diseñada con un enfoque de privacidad primero:
                 </p>
@@ -129,6 +180,7 @@ export default function TermsPage() {
                   <li><strong>No guardamos bases de datos</strong> con información de usuarios</li>
                   <li><strong>No recopilamos datos personales</strong> más allá de lo necesario para el funcionamiento</li>
                   <li><strong>No compartimos información</strong> con terceros excepto los proveedores de IA mencionados</li>
+                  <li><strong>No registramos</strong> qué modelos fueron utilizados para cada usuario</li>
                 </ul>
 
                 <h3 className="font-semibold text-slate-900 mt-6">2.2. Flujo de datos</h3>
@@ -137,10 +189,13 @@ export default function TermsPage() {
                 </p>
                 <ol className="list-decimal list-inside space-y-2 pl-4">
                   <li>Subes la imagen desde tu navegador</li>
+                  <li>El sistema consulta los modelos disponibles en OpenRouter</li>
+                  <li>Filtra y ordena los modelos por capacidad de contexto</li>
                   <li>La imagen se convierte temporalmente a formato base64 en el servidor</li>
-                  <li>Se envía a OpenRouter API (y de ahí al modelo de IA correspondiente)</li>
+                  <li>Se envía a OpenRouter API (y de ahí al modelo de IA seleccionado)</li>
+                  <li>Si un modelo falla, se intenta automáticamente con el siguiente</li>
                   <li>Recibimos los datos extraídos en formato JSON</li>
-                  <li>Te mostramos una vista previa de los datos</li>
+                  <li>Te mostramos una vista previa de los datos y el progreso detallado</li>
                   <li>Generas el archivo Excel <strong>localmente en tu navegador</strong></li>
                   <li><strong>Eliminamos todos los datos temporales</strong> una vez completada la operación</li>
                 </ol>
@@ -169,16 +224,30 @@ export default function TermsPage() {
               <div className="pl-13 space-y-4 text-slate-700">
                 <h3 className="font-semibold text-slate-900">3.1. Funcionamiento interno</h3>
                 <p>
-                  El código de Table Snap Pro está disponible para revisión y utiliza las siguientes tecnologías:
+                  El código de Table Snap Pro utiliza las siguientes tecnologías:
                 </p>
                 <ul className="list-disc list-inside space-y-2 pl-4">
                   <li><strong>Next.js</strong> - Framework de React para aplicaciones web</li>
                   <li><strong>TypeScript</strong> - Lenguaje tipado para mayor seguridad</li>
+                  <li><strong>Server-Sent Events (SSE)</strong> - Para actualizaciones en tiempo real del progreso</li>
                   <li><strong>SheetJS (XLSX)</strong> - Librería para generar archivos Excel en el navegador</li>
-                  <li><strong>OpenRouter SDK</strong> - Cliente para comunicación con APIs de IA</li>
+                  <li><strong>OpenRouter API</strong> - Cliente para comunicación con APIs de IA</li>
                 </ul>
 
-                <h3 className="font-semibold text-slate-900 mt-6">3.2. Generación de Excel</h3>
+                <h3 className="font-semibold text-slate-900 mt-6">3.2. Sistema de selección inteligente</h3>
+                <p>
+                  El sistema de selección de modelos realiza:
+                </p>
+                <ul className="list-disc list-inside space-y-2 pl-4">
+                  <li>Consulta dinámica del endpoint <code className="bg-slate-100 px-2 py-1 rounded">/v1/models</code> de OpenRouter</li>
+                  <li>Filtrado por modalidad (solo modelos multimodales con visión)</li>
+                  <li>Filtrado por empresa (OpenAI, Google, Anthropic, Meta, Qwen)</li>
+                  <li>Filtrado por precio (solo modelos gratuitos: $0.00)</li>
+                  <li>Ordenamiento por <code className="bg-slate-100 px-2 py-1 rounded">context_length</code> descendente</li>
+                  <li>Reintentos automáticos con fallback a otros modelos</li>
+                </ul>
+
+                <h3 className="font-semibold text-slate-900 mt-6">3.3. Generación de Excel</h3>
                 <p>
                   La generación del archivo Excel ocurre completamente <strong>en tu navegador</strong> 
                   usando la librería XLSX. Esto significa que:
@@ -189,14 +258,28 @@ export default function TermsPage() {
                   <li>No hay transmisión adicional de información a servidores externos</li>
                 </ul>
 
-                <h3 className="font-semibold text-slate-900 mt-6">3.3. Ubicación del código relevante</h3>
+                <h3 className="font-semibold text-slate-900 mt-6">3.4. Seguimiento del progreso</h3>
+                <p>
+                  La interfaz muestra en tiempo real:
+                </p>
+                <ul className="list-disc list-inside space-y-2 pl-4">
+                  <li>Consulta de modelos disponibles</li>
+                  <li>Filtrado por capacidades de visión</li>
+                  <li>Filtrado por empresas seleccionadas</li>
+                  <li>Filtrado por modelos gratuitos</li>
+                  <li>Intentos con cada modelo (con spinners que se convierten en checkmarks)</li>
+                  <li>Procesamiento de la respuesta</li>
+                  <li>Finalización exitosa o errores</li>
+                </ul>
+
+                <h3 className="font-semibold text-slate-900 mt-6">3.5. Ubicación del código relevante</h3>
                 <p>
                   Las partes principales del código incluyen:
                 </p>
                 <ul className="list-disc list-inside space-y-2 pl-4">
-                  <li><code className="bg-slate-100 px-2 py-1 rounded">app/api/extract/route.ts</code> - Manejo de la API y comunicación con IA</li>
+                  <li><code className="bg-slate-100 px-2 py-1 rounded">app/api/extract/route.ts</code> - Sistema de selección y comunicación con IA</li>
                   <li><code className="bg-slate-100 px-2 py-1 rounded">lib/excel-utils.ts</code> - Utilidades para generar Excel localmente</li>
-                  <li><code className="bg-slate-100 px-2 py-1 rounded">app/page.tsx</code> - Interfaz de usuario y manejo de estado</li>
+                  <li><code className="bg-slate-100 px-2 py-1 rounded">components/sections/landing/landingUpload.tsx</code> - Interfaz con seguimiento en tiempo real</li>
                 </ul>
               </div>
             </section>
@@ -218,9 +301,10 @@ export default function TermsPage() {
                 <ul className="list-disc list-inside space-y-2 pl-4">
                   <li>Ser el único responsable del contenido de las imágenes que subas</li>
                   <li>No subir contenido ilegal, ofensivo o que viole derechos de terceros</li>
-                  <li>Entender que los datos pueden ser vistos y procesados por servicios de IA de terceros</li>
+                  <li>Entender que los datos pueden ser vistos y procesados por servicios de IA de terceros variables</li>
                   <li>Asumir el riesgo de subir información sensible o confidencial</li>
                   <li>Verificar la precisión de los datos extraídos antes de usarlos en contextos críticos</li>
+                  <li>Comprender que el modelo específico utilizado puede variar en cada solicitud</li>
                 </ul>
               </div>
             </section>
@@ -242,9 +326,11 @@ export default function TermsPage() {
                 <ul className="list-disc list-inside space-y-2 pl-4">
                   <li><strong>Precisión:</strong> No garantizamos que la extracción de datos sea 100% precisa</li>
                   <li><strong>Disponibilidad:</strong> Los modelos de IA pueden estar saturados o no disponibles</li>
+                  <li><strong>Modelos variables:</strong> No controlamos qué modelos específicos estarán disponibles en cada momento</li>
                   <li><strong>Privacidad de terceros:</strong> No controlamos las políticas de los proveedores de IA</li>
                   <li><strong>Pérdida de datos:</strong> No somos responsables por pérdida o mal uso de información</li>
                   <li><strong>Uso comercial:</strong> Este es un proyecto educativo y de portafolio</li>
+                  <li><strong>Cambios en OpenRouter:</strong> La disponibilidad y capacidades pueden cambiar sin previo aviso</li>
                 </ul>
               </div>
             </section>
@@ -258,7 +344,8 @@ export default function TermsPage() {
                 <p>
                   Nos reservamos el derecho de modificar estos términos en cualquier momento. 
                   Los cambios serán efectivos inmediatamente al publicarse en esta página. 
-                  Te recomendamos revisar estos términos periódicamente.
+                  Te recomendamos revisar estos términos periódicamente, especialmente cuando 
+                  se actualice el sistema de selección de modelos.
                 </p>
               </div>
             </section>
